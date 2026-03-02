@@ -1,0 +1,13 @@
+# build artifacts
+/build/
+/dist/
+/*.egg-info/
+wheelhouse/
+*.so
+*.pyd
+*.dll
+__pycache__/
+*.pyc
+*.log
+.idea/
+.vscode/
