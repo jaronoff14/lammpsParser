@@ -17,6 +17,9 @@ set(SRC_CPP
 
 pybind11_add_module(lammpsParser ${SRC_CPP})
 
+install(TARGETS lammpsParser
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/lammpsParser)
+
 # link stdc++fs for older compilers if needed
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
