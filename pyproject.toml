@@ -16,8 +16,25 @@ description = "LAMMPS dump parser (C++/pybind11) with NumPy API"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
-  { name = "Jon Aronoff", email = "jon.aronoff@utah.edu" }
+  { name = "Jon", email = "jon.aronoff@utah.edu" }
 ]
 license = { text = "MIT" }
-dependencies = ["numpy"]
 keywords = ["lammps","parser","pybind11","numpy"]
+dependencies = [
+  "numpy"
+]
+
+[project.urls]
+Homepage = "https://github.com/jaronoff14/lammpsParser"
+
+# Ensure setuptools will include the python package folder (if present)
+# This is optional but safe: scikit-build-core will include files under the install() destination,
+# but this ensures that source Python files (the shim __init__.py) are discovered.
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lammpsParser"]
+
+# Optional scikit-build configuration (leave out cmake-args unless needed)
+[tool.scikit-build]
+# example: pass Python executable explicitly for reproducible builds (uncomment if needed)
+# cmake-args = ["-DPYTHON_EXECUTABLE=/usr/bin/python3"]
