@@ -190,6 +190,7 @@ static vector<Atom> parseAtomsFromStream_afterHeader(std::istream &in, const str
                 a.extras[key] = to_double(toks[j]);
             }
         }
+        a.positions = {a.xu, a.yu,a.zu}
         atoms.push_back(std::move(a));
     }
 

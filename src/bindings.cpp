@@ -36,6 +36,7 @@ PYBIND11_MODULE(lammpsParser, m) {
         .def_readwrite("c_KE", &lammps_parser::Atom::c_KE)
         .def_readwrite("c_PE", &lammps_parser::Atom::c_PE)
         .def_readwrite("c_stress", &lammps_parser::Atom::c_stress)
+        .def_readwrite("positions", &lammps_parser::Atom::positions)
         .def_readwrite("raw_tokens", &lammps_parser::Atom::raw_tokens)
         .def_readwrite("extras", &lammps_parser::Atom::extras);
 
@@ -164,36 +165,37 @@ PYBIND11_MODULE(lammpsParser, m) {
           py::arg("filepath"),
           py::arg("format_override") = std::string(lammps_parser::DEFAULT_FORMAT),
           "Parse a single frame and return a column-major dict suitable for NumPy.");
+        }
 
     // install helper (use hasattr to avoid deprecated operator)
-    m.def("install_into_active_env",
-          [m](bool overwrite) -> std::string {
-              if (!py::hasattr(m, "__file__")) throw std::runtime_error("Cannot determine module __file__");
-              std::string src = py::str(m.attr("__file__"));
-              py::module sysconfig = py::module::import("sysconfig");
-              std::string purelib;
-              try {
-                  py::object pathobj = sysconfig.attr("get_path")(std::string("purelib"));
-                  purelib = py::str(pathobj);
-              } catch (const py::error_already_set &e) {
-                  throw std::runtime_error(std::string("Failed to get purelib path: ") + e.what());
-              }
+//     m.def("install_into_active_env",
+//           [m](bool overwrite) -> std::string {
+//               if (!py::hasattr(m, "__file__")) throw std::runtime_error("Cannot determine module __file__");
+//               std::string src = py::str(m.attr("__file__"));
+//               py::module sysconfig = py::module::import("sysconfig");
+//               std::string purelib;
+//               try {
+//                   py::object pathobj = sysconfig.attr("get_path")(std::string("purelib"));
+//                   purelib = py::str(pathobj);
+//               } catch (const py::error_already_set &e) {
+//                   throw std::runtime_error(std::string("Failed to get purelib path: ") + e.what());
+//               }
 
-              fs::path dest_dir(purelib);
-              if (!fs::exists(dest_dir)) {
-                  py::module site = py::module::import("site");
-                  py::object listobj = site.attr("getsitepackages")();
-                  if (py::len(listobj) > 0) dest_dir = fs::path(py::str(listobj[0]));
-              }
+//               fs::path dest_dir(purelib);
+//               if (!fs::exists(dest_dir)) {
+//                   py::module site = py::module::import("site");
+//                   py::object listobj = site.attr("getsitepackages")();
+//                   if (py::len(listobj) > 0) dest_dir = fs::path(py::str(listobj[0]));
+//               }
 
-              if (!fs::exists(dest_dir)) throw std::runtime_error("Destination site-packages does not exist: " + dest_dir.string());
-              fs::path src_path(src);
-              fs::path dest_path = dest_dir / src_path.filename();
-              if (fs::exists(dest_path) && !overwrite) throw std::runtime_error("Destination file exists: " + dest_path.string() + ". Use overwrite=True to replace.");
-              try { fs::copy_file(src_path, dest_path, fs::copy_options::overwrite_existing); }
-              catch (const std::exception &ex) { throw std::runtime_error(std::string("Failed to copy module file: ") + ex.what()); }
-              return dest_path.string();
-          },
-          py::arg("overwrite") = false,
-          "Install this compiled module into the active Python environment's site-packages (purelib).");
-}
+//               if (!fs::exists(dest_dir)) throw std::runtime_error("Destination site-packages does not exist: " + dest_dir.string());
+//               fs::path src_path(src);
+//               fs::path dest_path = dest_dir / src_path.filename();
+//               if (fs::exists(dest_path) && !overwrite) throw std::runtime_error("Destination file exists: " + dest_path.string() + ". Use overwrite=True to replace.");
+//               try { fs::copy_file(src_path, dest_path, fs::copy_options::overwrite_existing); }
+//               catch (const std::exception &ex) { throw std::runtime_error(std::string("Failed to copy module file: ") + ex.what()); }
+//               return dest_path.string();
+//           },
+//           py::arg("overwrite") = false,
+//           "Install this compiled module into the active Python environment's site-packages (purelib).");
+// }

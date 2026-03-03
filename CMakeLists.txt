@@ -13,7 +13,7 @@ find_package(pybind11 CONFIG REQUIRED)
 #pybind11_add_module(lammpsParser example.cpp)
 
 
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/lammpsParser")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(SRCS

@@ -31,6 +31,7 @@ struct Atom {
     long long mol = 0;
     double c_KE = 0.0, c_PE = 0.0;
     std::array<double,6> c_stress = {0,0,0,0,0,0};
+    std::array<double,3> positions = {0,0,0};
     std::vector<std::string> raw_tokens; // original tokens from the line
     std::unordered_map<std::string,double> extras; // unknown/extra columns (name -> value)
 };
