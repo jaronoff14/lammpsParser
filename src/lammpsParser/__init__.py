@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .lammpsParser import __doc__, __version__,parse_frame_from_file
+from . import __doc__, __version__,parse_frame_from_file
 
 __all__ = ["__doc__", "__version__","parse_frame_from_file"]
 
