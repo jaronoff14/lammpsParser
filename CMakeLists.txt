@@ -46,8 +46,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lammpsParser")
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lammpsParser
             DESTINATION ${PYTHON_PLATLIB_REL})
 endif()
-#install(TARGETS lammpsParser
-#        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/lammpsParser)
+install(TARGETS lammpsParser
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/lammpsParser)
 
 # link stdc++fs for older compilers if needed
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
