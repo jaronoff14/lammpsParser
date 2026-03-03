@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15...3.26)
 project(${SKBUILD_PROJECT_NAME} LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
@@ -17,5 +20,7 @@ set(SRCS
 
 pybind11_add_module(lammpsParser ${SRCS})
 target_include_directories(lammpsParser PRIVATE ${INC_DIR})
+target_compile_features(lammpsParser PRIVATE cxx_std_17)
+
 
 install(TARGETS lammpsParser LIBRARY DESTINATION .)
