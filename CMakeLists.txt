@@ -10,9 +10,9 @@ find_package(pybind11 CONFIG REQUIRED)
 # include folder for headers
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(SRC_CPP
-    src_cpp/lammps_parser.cpp
-    src_cpp/bindings.cpp
+set(SRC
+    src/lammps_parser.cpp
+    src/bindings.cpp
 )
 
 pybind11_add_module(lammpsParser ${SRC_CPP})
