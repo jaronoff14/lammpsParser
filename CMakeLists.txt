@@ -10,42 +10,45 @@ find_package(pybind11 CONFIG REQUIRED)
 
 message(STATUS "Using Python executable: ${Python_EXECUTABLE}")
 message(STATUS "pybind11 version: ${pybind11_VERSION}")
+message(STATUS "Current source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Source layout (use CMAKE_CURRENT_SOURCE_DIR so paths are correct inside scikit-build's sandbox)
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# Resolve source and include dirs explicitly (absolute paths)
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
+message(STATUS "SRC_DIR = ${SRC_DIR}")
+message(STATUS "INC_DIR = ${INC_DIR}")
 
-# Required source files (explicit)
+# Candidate source files (adjust/add if you name differently)
 set(SRCS
-    ${SRC_DIR}/lammps_parser.cpp
-    ${SRC_DIR}/bindings.cpp
+    "${SRC_DIR}/lammps_parser.cpp"
+    "${SRC_DIR}/bindings.cpp"
 )
 
-# Sanity: check the files exist and show errors early if not
-foreach(f ${SRCS})
-    if(NOT EXISTS "${f}")
-        message(FATAL_ERROR "Required source file not found: ${f} (current source dir: ${CMAKE_CURRENT_SOURCE_DIR})")
+# Check for existence of sources and fail with clear message if missing
+foreach(_f IN LISTS SRCS)
+    if(EXISTS "${_f}")
+        message(STATUS "  FOUND: ${_f}")
+    else()
+        message(FATAL_ERROR "Required source file not found: ${_f}\nMake sure the file exists and is committed to the repo.")
     endif()
 endforeach()
 
-# Include headers
-target_include_directories(${PROJECT_NAME} INTERFACE ${INC_DIR}) # placeholder until module target exists
-
-# Create the pybind11 module
-# Note: pybind11_add_module expects source files list; pass our SRCS
+# Create the pybind11 extension target (this must come before target_* calls)
 pybind11_add_module(lammpsParser ${SRCS})
+message(STATUS "Created pybind11 module target 'lammpsParser'")
 
-# Now ensure include dir is attached to target
+# Now attach include dirs and basic compile features
 target_include_directories(lammpsParser PRIVATE ${INC_DIR})
+target_compile_features(lammpsParser PRIVATE cxx_std_17)
 
-# Platform compatibility (older libstdc++)
+# Compatibility for older libstdc++
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0")
     target_link_libraries(lammpsParser PRIVATE stdc++fs)
   endif()
 endif()
 
-# Compute Python platlib and make a relative destination for staged install
+# Compute Python platlib path and strip leading slash so install DESTINATION is relative
 execute_process(
   COMMAND ${Python_EXECUTABLE} -c
     "import sysconfig; print(sysconfig.get_path('platlib'))"
@@ -53,16 +56,17 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 if (NOT PYTHON_PLATLIB)
-  message(FATAL_ERROR "Failed to query Python platlib path via ${Python_EXECUTABLE}")
+  message(FATAL_ERROR "Failed to query Python platlib via ${Python_EXECUTABLE}")
 endif()
 string(REGEX REPLACE "^/" "" PYTHON_PLATLIB_REL "${PYTHON_PLATLIB}")
 message(STATUS "Python platlib (relative): ${PYTHON_PLATLIB_REL}")
 
-# Install compiled shared object into site-packages/lammpsParser inside staging dir
+# Install the compiled module into staging_dir/<platlib>/lammpsParser so it will be
+# included inside the wheel as lammpsParser/<so>.
 install(TARGETS lammpsParser
         LIBRARY DESTINATION ${PYTHON_PLATLIB_REL}/lammpsParser)
 
-# Also ensure python package files are installed if present in source tree
+# Also ensure python package files (shim __init__.py) are included in the wheel
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/lammpsParser")
     install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lammpsParser
             DESTINATION ${PYTHON_PLATLIB_REL})
