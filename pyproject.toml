@@ -32,7 +32,7 @@ Homepage = "https://github.com/jaronoff14/lammpsParser"
 # but this ensures that source Python files (the shim __init__.py) are discovered.
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["lammpsParser"]
+include = ["src/lammpsParser"]
 
 # Optional scikit-build configuration (leave out cmake-args unless needed)
 [tool.scikit-build]
