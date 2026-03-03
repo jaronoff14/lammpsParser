@@ -38,4 +38,4 @@ include = ["lammpsParser"]
 [tool.scikit-build]
 # example: pass Python executable explicitly for reproducible builds (uncomment if needed)
 # cmake-args = ["-DPYTHON_EXECUTABLE=/usr/bin/python3"]
-wheel.packages = ["src/"]
+wheel.packages = ["src/lammpsParser/"]
