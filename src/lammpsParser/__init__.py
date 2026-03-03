@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-#from ._core import __doc__, __version__,parse_frame_from_file
-from . import lammpsParser
-__all__ = ["lammpsParser"]
+from . import __doc__, __version__,parse_frame_from_file
+
+__all__ = ["__doc__", "__version__","parse_frame_from_file"]
 
 # # __init__.py
 # # import the compiled extension module (name discovered from wheel)
