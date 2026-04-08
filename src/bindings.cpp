@@ -33,9 +33,9 @@ PYBIND11_MODULE(lammpsParser, m) {
         .def_readwrite("yu", &lammps_parser::Atom::yu)
         .def_readwrite("zu", &lammps_parser::Atom::zu)
         .def_readwrite("mol", &lammps_parser::Atom::mol)
-        .def_readwrite("c_KE", &lammps_parser::Atom::c_KE)
-        .def_readwrite("c_PE", &lammps_parser::Atom::c_PE)
-        .def_readwrite("c_stress", &lammps_parser::Atom::c_stress)
+        // .def_readwrite("c_KE", &lammps_parser::Atom::c_KE)
+        // .def_readwrite("c_PE", &lammps_parser::Atom::c_PE)
+        // .def_readwrite("c_stress", &lammps_parser::Atom::c_stress)
         .def_readwrite("positions", &lammps_parser::Atom::positions)
         .def_readwrite("raw_tokens", &lammps_parser::Atom::raw_tokens)
         .def_readwrite("extras", &lammps_parser::Atom::extras);
@@ -76,19 +76,11 @@ PYBIND11_MODULE(lammpsParser, m) {
               py::array_t<double> arr_xu(Ns);
               py::array_t<double> arr_yu(Ns);
               py::array_t<double> arr_zu(Ns);
-              py::array_t<double> arr_cKE(Ns);
-              py::array_t<double> arr_cPE(Ns);
-
+            
               auto buf_xu = arr_xu.mutable_unchecked<1>();
               auto buf_yu = arr_yu.mutable_unchecked<1>();
               auto buf_zu = arr_zu.mutable_unchecked<1>();
-              auto buf_cKE = arr_cKE.mutable_unchecked<1>();
-              auto buf_cPE = arr_cPE.mutable_unchecked<1>();
-
-              // c_stress as (N,6) array: construct with a shape vector (portable)
-              std::vector<ssize_t> shape2 = { Ns, static_cast<ssize_t>(6) };
-              py::array_t<double> arr_cstress(shape2);
-              auto buf_cstress = arr_cstress.mutable_unchecked<2>();
+            
 
               // Collect extras keys across atoms
               std::set<std::string> extras_keys_set;
@@ -111,9 +103,7 @@ PYBIND11_MODULE(lammpsParser, m) {
                   buf_xu(idx) = a.xu;
                   buf_yu(idx) = a.yu;
                   buf_zu(idx) = a.zu;
-                  buf_cKE(idx) = a.c_KE;
-                  buf_cPE(idx) = a.c_PE;
-                  for (int s = 0; s < 6; ++s) buf_cstress(idx, s) = a.c_stress[s];
+                
                   // extras
                   for (size_t k = 0; k < extras_keys.size(); ++k) {
                       const std::string &key = extras_keys[k];
@@ -151,10 +141,7 @@ PYBIND11_MODULE(lammpsParser, m) {
               columns["xu"] = arr_xu;
               columns["yu"] = arr_yu;
               columns["zu"] = arr_zu;
-              columns["c_KE"] = arr_cKE;
-              columns["c_PE"] = arr_cPE;
-              columns["c_stress"] = arr_cstress;
-
+        
               for (size_t k = 0; k < extras_keys.size(); ++k) {
                   columns[extras_keys[k].c_str()] = extras_arrays[k];
               }

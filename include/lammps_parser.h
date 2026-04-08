@@ -29,8 +29,6 @@ struct Atom {
     int type = 0;
     double xu = 0.0, yu = 0.0, zu = 0.0;
     long long mol = 0;
-    double c_KE = 0.0, c_PE = 0.0;
-    std::array<double,6> c_stress = {0,0,0,0,0,0};
     std::array<double,3> positions = {0,0,0};
     std::vector<std::string> raw_tokens; // original tokens from the line
     std::unordered_map<std::string,double> extras; // unknown/extra columns (name -> value)
@@ -44,6 +42,9 @@ struct ParsedFrame {
 
 // Default format string (same as original)
 extern const char* DEFAULT_FORMAT;
+extern const char* DEFAULT_ATOMSTYLE;
+
+
 
 // Top-level parsing functions
 // Parse a single file (single frame). If the file contains an ITEM: ATOMS line that specifies columns,

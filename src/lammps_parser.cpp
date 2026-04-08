@@ -18,6 +18,7 @@ using std::unordered_map;
 namespace fs = std::filesystem;
 
 const char* DEFAULT_FORMAT = "type id xu yu zu mol";
+const char* DEFAULT_ATOMSTYLE = "";
 
 //const char* DEFAULT_FORMAT = "type id xu yu zu mol c_KE c_PE c_stress[1] c_stress[2] c_stress[3] c_stress[4] c_stress[5] c_stress[6]";
 
@@ -174,17 +175,11 @@ static vector<Atom> parseAtomsFromStream_afterHeader(std::istream &in, const str
             else if (colnorm == "yu" || colnorm == "y") a.yu = to_double(val);
             else if (colnorm == "zu" || colnorm == "z") a.zu = to_double(val);
             else if (colnorm == "mol" || colnorm == "molecule") a.mol = to_ll(val);
-            // else if (colnorm == "c_ke" || colnorm == "ke") a.c_KE = to_double(val);
-            // else if (colnorm == "c_pe" || colnorm == "pe") a.c_PE = to_double(val);
             else {
                 auto pi = parse_col_index(colnorm);
                 string base = pi.first;
                 int idx = pi.second;
                 a.extras[col] = to_double(val);
-                // if ((base == "c_stress" || base == "stress" || base == "cstress") && idx >= 1 && idx <= 6)
-                //     a.c_stress[idx-1] = to_double(val);
-                // else
-                //     a.extras[col] = to_double(val);
             }
         }
         if (toks.size() > cols.size()) {
