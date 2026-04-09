@@ -18,7 +18,6 @@ using std::unordered_map;
 namespace fs = std::filesystem;
 
 const char* DEFAULT_FORMAT = "type id xu yu zu mol";
-const char* DEFAULT_ATOMSTYLE = "";
 
 //const char* DEFAULT_FORMAT = "type id xu yu zu mol c_KE c_PE c_stress[1] c_stress[2] c_stress[3] c_stress[4] c_stress[5] c_stress[6]";
 

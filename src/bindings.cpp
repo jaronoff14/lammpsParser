@@ -13,7 +13,7 @@ namespace py = pybind11;
 namespace fs = std::filesystem;
 
 PYBIND11_MODULE(lammpsParser, m) {
-    m.doc() = "LAMMPS dump parser (header + flexible atoms format) with NumPy column API and installer";
+    m.doc() = "LAMMPS dump and datafiles parser";
 
     py::class_<lammps_parser::BoxBound>(m, "BoxBound")
         .def_readwrite("lo", &lammps_parser::BoxBound::lo)
@@ -152,6 +152,106 @@ PYBIND11_MODULE(lammpsParser, m) {
           py::arg("filepath"),
           py::arg("format_override") = std::string(lammps_parser::DEFAULT_FORMAT),
           "Parse a single frame and return a column-major dict suitable for NumPy.");
+
+        py::class_<lammps_parser::DataHeader>(m, "DataHeader")
+            .def_readwrite("natoms", &lammps_parser::DataHeader::natoms)
+            .def_readwrite("atom_types", &lammps_parser::DataHeader::atom_types)
+            .def_readwrite("xlo", &lammps_parser::DataHeader::xlo)
+            .def_readwrite("xhi", &lammps_parser::DataHeader::xhi)
+            .def_readwrite("ylo", &lammps_parser::DataHeader::ylo)
+            .def_readwrite("yhi", &lammps_parser::DataHeader::yhi)
+            .def_readwrite("zlo", &lammps_parser::DataHeader::zlo)
+            .def_readwrite("zhi", &lammps_parser::DataHeader::zhi)
+            .def_readwrite("xy", &lammps_parser::DataHeader::xy)
+            .def_readwrite("xz", &lammps_parser::DataHeader::xz)
+            .def_readwrite("yz", &lammps_parser::DataHeader::yz)
+            .def_readwrite("triclinic", &lammps_parser::DataHeader::triclinic)
+            .def_readwrite("atom_style", &lammps_parser::DataHeader::atom_style);
+
+        py::class_<lammps_parser::DataAtom>(m, "DataAtom")
+            .def_readwrite("id", &lammps_parser::DataAtom::id)
+            .def_readwrite("mol", &lammps_parser::DataAtom::mol)
+            .def_readwrite("type", &lammps_parser::DataAtom::type)
+            .def_readwrite("x", &lammps_parser::DataAtom::x)
+            .def_readwrite("y", &lammps_parser::DataAtom::y)
+            .def_readwrite("z", &lammps_parser::DataAtom::z)
+            .def_readwrite("raw_tokens", &lammps_parser::DataAtom::raw_tokens);
+
+        py::class_<lammps_parser::DataFile>(m, "DataFile")
+            .def_readwrite("header", &lammps_parser::DataFile::header)
+            .def_readwrite("atoms", &lammps_parser::DataFile::atoms);
+
+        m.def("parse_data_from_file",
+            &lammps_parser::parse_data_from_file,
+            py::arg("filepath"),
+            py::arg("atom_style") = std::string(lammps_parser::DEFAULT_ATOMSTYLE),
+            "Parse a LAMMPS data file. Default atom style is molecular.");
+
+        m.def("parse_data_to_numpy",
+            [](const std::string &filepath, const std::string &atom_style) {
+                lammps_parser::DataFile df =
+                    lammps_parser::parse_data_from_file(filepath, atom_style);
+
+                const size_t N = df.atoms.size();
+                const ssize_t Ns = static_cast<ssize_t>(N);
+
+                py::array_t<long long> arr_id(Ns);
+                py::array_t<long long> arr_type(Ns);
+                py::array_t<long long> arr_mol(Ns);
+                py::array_t<double> arr_x(Ns);
+                py::array_t<double> arr_y(Ns);
+                py::array_t<double> arr_z(Ns);
+
+                auto idv = arr_id.mutable_unchecked<1>();
+                auto typev = arr_type.mutable_unchecked<1>();
+                auto molv = arr_mol.mutable_unchecked<1>();
+                auto xv = arr_x.mutable_unchecked<1>();
+                auto yv = arr_y.mutable_unchecked<1>();
+                auto zv = arr_z.mutable_unchecked<1>();
+
+                for (size_t i = 0; i < N; ++i) {
+                    const auto &a = df.atoms[i];
+                    const ssize_t idx = static_cast<ssize_t>(i);
+                    idv(idx) = a.id;
+                    typev(idx) = a.type;
+                    molv(idx) = a.mol;
+                    xv(idx) = a.x;
+                    yv(idx) = a.y;
+                    zv(idx) = a.z;
+                }
+
+                py::dict header;
+                header["natoms"] = df.header.natoms;
+                header["atom_types"] = df.header.atom_types;
+                header["xlo"] = df.header.xlo;
+                header["xhi"] = df.header.xhi;
+                header["ylo"] = df.header.ylo;
+                header["yhi"] = df.header.yhi;
+                header["zlo"] = df.header.zlo;
+                header["zhi"] = df.header.zhi;
+                header["xy"] = df.header.xy;
+                header["xz"] = df.header.xz;
+                header["yz"] = df.header.yz;
+                header["triclinic"] = df.header.triclinic;
+                header["atom_style"] = df.header.atom_style;
+
+                py::dict columns;
+                columns["id"] = arr_id;
+                columns["mol"] = arr_mol;
+                columns["type"] = arr_type;
+                columns["x"] = arr_x;
+                columns["y"] = arr_y;
+                columns["z"] = arr_z;
+
+                py::dict result;
+                result["header"] = header;
+                result["n_atoms"] = static_cast<long long>(N);
+                result["columns"] = columns;
+                return result;
+        },
+        py::arg("filepath"),
+        py::arg("atom_style") = std::string(lammps_parser::DEFAULT_ATOMSTYLE),
+        "Parse a LAMMPS data file and return NumPy arrays for id/mol/type/x/y/z.");
         }
 
     // install helper (use hasattr to avoid deprecated operator)

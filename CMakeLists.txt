@@ -18,6 +18,7 @@ set(INC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(SRCS
     "${SRC_DIR}/lammps_parser.cpp"
+    "${SRC_DIR}/lammps_data.cpp"
     "${SRC_DIR}/bindings.cpp"
 )
 

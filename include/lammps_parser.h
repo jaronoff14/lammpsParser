@@ -40,11 +40,50 @@ struct ParsedFrame {
     std::vector<Atom> atoms; // sorted by mol then id
 };
 
+struct ParsedDataFile {
+    Header header;
+    //atom types
+    //masses
+    std::vector<Atom> atoms;
+};
+
+struct DataHeader {
+    long long natoms = 0;
+    long long atom_types = 0;
+
+    double xlo = 0.0, xhi = 0.0;
+    double ylo = 0.0, yhi = 0.0;
+    double zlo = 0.0, zhi = 0.0;
+
+    double xy = 0.0, xz = 0.0, yz = 0.0;
+    bool triclinic = false;
+
+    std::string atom_style = "molecular";
+};
+
+struct DataAtom {
+    long long id = 0;
+    long long mol = 0;
+    long long type = 0;
+    double x = 0.0, y = 0.0, z = 0.0;
+
+    std::vector<std::string> raw_tokens;
+};
+
+struct DataFile {
+    DataHeader header;
+    std::vector<DataAtom> atoms;
+};
+
+
 // Default format string (same as original)
 extern const char* DEFAULT_FORMAT;
 extern const char* DEFAULT_ATOMSTYLE;
 
 
+
+DataFile parse_data_from_file(const std::string &filepath,
+                                    const std::string &atomstyle_override = std::string(DEFAULT_ATOMSTYLE));
 
 // Top-level parsing functions
 // Parse a single file (single frame). If the file contains an ITEM: ATOMS line that specifies columns,
