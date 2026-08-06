@@ -151,6 +151,7 @@ PYBIND11_MODULE(lammpsParser, m) {
               return result;
           },
           py::arg("filepath"),
+          py::arg("frame_num")=0,
           py::arg("format_override") = std::string(lammps_parser::DEFAULT_FORMAT),
           "Parse a single frame and return a column-major dict suitable for NumPy.");
 

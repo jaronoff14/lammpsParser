@@ -9,3 +9,6 @@ def test_data():
     
     file = 'dump.test.lammpstrj'
     lammpsParser.parse_frame_to_numpy(file)
+    
+    lammpsParser.parse_frame_to_numpy(file,frame_num=1)
+    print("Finished")

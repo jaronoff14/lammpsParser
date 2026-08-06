@@ -207,12 +207,14 @@ ParsedFrame parse_frame_from_file(const string &filepath, const int frame_num, c
     string item_atoms_line;
     Header header;
     if (frame_num != 0) {
-        
-        Header initial_header = parseHeaderFromStream(ifs, item_atoms_line);
-        int start_line = (initial_header.n_atoms + HEADER_LENGTH) * frame_num;
+        string testLine;
+        Header initial_header = parseHeaderFromStream(ifs,item_atoms_line);
+        int start_line = (initial_header.n_atoms) * frame_num;
+
         string line;
+        int count = 0;
         for (int i =0; i<start_line;i++){
-            std::getline(ifs,line);
+            std::getline(ifs,item_atoms_line);
         }
         header = parseHeaderFromStream(ifs, item_atoms_line);
     }
@@ -248,7 +250,7 @@ vector<ParsedFrame> parse_frames_from_directory(const string &dirpath, const str
     vector<ParsedFrame> results;
     for (auto &p : matches) {
         try {
-            results.push_back(parse_frame_from_file(p.second.string(), format_override));
+            results.push_back(parse_frame_from_file(p.second.string(), 0,format_override));
         } catch (const std::exception &ex) {
             // Issue a warning and continue
             std::cerr << "Warning: failed to parse file " << p.second << ": " << ex.what() << "\n";
