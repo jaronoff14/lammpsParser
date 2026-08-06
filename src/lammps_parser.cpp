@@ -18,6 +18,7 @@ using std::unordered_map;
 namespace fs = std::filesystem;
 
 const char* DEFAULT_FORMAT = "type id xu yu zu mol";
+const int HEADER_LENGTH =  8;
 
 //const char* DEFAULT_FORMAT = "type id xu yu zu mol c_KE c_PE c_stress[1] c_stress[2] c_stress[3] c_stress[4] c_stress[5] c_stress[6]";
 
@@ -29,6 +30,7 @@ static inline vector<string> split_ws(const string &s) {
     while (iss >> tok) out.push_back(tok);
     return out;
 }
+
 static inline string lower_copy(const string &s) {
     string r = s;
     for (char &c : r) c = char(std::tolower((unsigned char)c));
@@ -199,11 +201,25 @@ static vector<Atom> parseAtomsFromStream_afterHeader(std::istream &in, const str
 }
 
 // ----------------- public functions -----------------
-ParsedFrame parse_frame_from_file(const string &filepath, const string &format_override) {
+ParsedFrame parse_frame_from_file(const string &filepath, const int frame_num, const string &format_override) {
     std::ifstream ifs(filepath);
     if (!ifs.is_open()) throw std::runtime_error("Unable to open file: " + filepath);
     string item_atoms_line;
-    Header header = parseHeaderFromStream(ifs, item_atoms_line);
+    Header header;
+    if (frame_num != 0) {
+        
+        Header initial_header = parseHeaderFromStream(ifs, item_atoms_line);
+        int start_line = (initial_header.n_atoms + HEADER_LENGTH) * frame_num;
+        string line;
+        for (int i =0; i<start_line;i++){
+            std::getline(ifs,line);
+        }
+        header = parseHeaderFromStream(ifs, item_atoms_line);
+    }
+    else{
+        header = parseHeaderFromStream(ifs, item_atoms_line);
+    }
+    
     if (item_atoms_line.empty()) {
         string line;
         while (std::getline(ifs, line)) {
@@ -240,5 +256,6 @@ vector<ParsedFrame> parse_frames_from_directory(const string &dirpath, const str
     }
     return results;
 }
+
 
 } // namespace lammps_parser

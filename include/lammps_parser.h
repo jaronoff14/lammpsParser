@@ -80,15 +80,19 @@ struct DataFile {
 extern const char* DEFAULT_FORMAT;
 extern const char* DEFAULT_ATOMSTYLE;
 
+// Default header length
+extern const int HEADER_LENGTH;
 
 
 DataFile parse_data_from_file(const std::string &filepath,
-                                    const std::string &atomstyle_override = std::string(DEFAULT_ATOMSTYLE));
+                              const std::string &atomstyle_override = std::string(DEFAULT_ATOMSTYLE));
 
 // Top-level parsing functions
-// Parse a single file (single frame). If the file contains an ITEM: ATOMS line that specifies columns,
+// Parse a single file (single frame which can be specified by frame_num if the file contains more than 1 frame).
+// If the file contains an ITEM: ATOMS line that specifies columns,
 // that will override the format_override. Otherwise, the provided format_override is used.
 ParsedFrame parse_frame_from_file(const std::string &filepath,
+                                  const int frame_num = 0,
                                   const std::string &format_override = std::string(DEFAULT_FORMAT));
 
 // Parse multiple files from a directory matching pattern `^dump\..*\.lammpstrj$` (case-insensitive).

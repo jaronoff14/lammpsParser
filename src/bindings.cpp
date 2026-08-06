@@ -47,6 +47,7 @@ PYBIND11_MODULE(lammpsParser, m) {
     m.def("parse_frame_from_file",
           &lammps_parser::parse_frame_from_file,
           py::arg("filepath"),
+          py::arg("frame_num") = 0,
           py::arg("format_override") = std::string(lammps_parser::DEFAULT_FORMAT),
           "Parse a single file and return a ParsedFrame.");
 
@@ -58,8 +59,8 @@ PYBIND11_MODULE(lammpsParser, m) {
 
     // parse_frame_to_numpy (fixed array constructors)
     m.def("parse_frame_to_numpy",
-          [](const std::string &filepath, const std::string &format_override) {
-              lammps_parser::ParsedFrame pf = lammps_parser::parse_frame_from_file(filepath, format_override);
+          [](const std::string &filepath, const int frame_num, const std::string &format_override) {
+              lammps_parser::ParsedFrame pf = lammps_parser::parse_frame_from_file(filepath, frame_num, format_override);
               size_t N = pf.atoms.size();
               ssize_t Ns = static_cast<ssize_t>(N);
 
