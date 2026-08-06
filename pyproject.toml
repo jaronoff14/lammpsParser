@@ -11,8 +11,8 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "lammpsParser"
-version = "0.1.0"
-description = "LAMMPS dump parser (C++/pybind11) with NumPy API"
+version = "0.1.1"
+description = "LAMMPS dump parser"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
@@ -27,15 +27,10 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/jaronoff14/lammpsParser"
 
-# Ensure setuptools will include the python package folder (if present)
-# This is optional but safe: scikit-build-core will include files under the install() destination,
-# but this ensures that source Python files (the shim __init__.py) are discovered.
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["src/lammpsParser"]
 
-# Optional scikit-build configuration (leave out cmake-args unless needed)
 [tool.scikit-build]
-# example: pass Python executable explicitly for reproducible builds (uncomment if needed)
-# cmake-args = ["-DPYTHON_EXECUTABLE=/usr/bin/python3"]
 wheel.packages = ["src/lammpsParser/"]
