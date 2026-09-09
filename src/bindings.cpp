@@ -203,6 +203,9 @@ PYBIND11_MODULE(lammpsParser, m) {
                 py::array_t<double> arr_x(Ns);
                 py::array_t<double> arr_y(Ns);
                 py::array_t<double> arr_z(Ns);
+                py::array_t<long long> arr_ix(Ns);
+                py::array_t<long long> arr_iy(Ns);
+                py::array_t<long long> arr_iz(Ns);
 
                 auto idv = arr_id.mutable_unchecked<1>();
                 auto typev = arr_type.mutable_unchecked<1>();
@@ -210,6 +213,9 @@ PYBIND11_MODULE(lammpsParser, m) {
                 auto xv = arr_x.mutable_unchecked<1>();
                 auto yv = arr_y.mutable_unchecked<1>();
                 auto zv = arr_z.mutable_unchecked<1>();
+                auto ixv = arr_ix.mutable_unchecked<1>();
+                auto iyv = arr_iy.mutable_unchecked<1>();
+                auto izv = arr_iz.mutable_unchecked<1>();
 
                 for (size_t i = 0; i < N; ++i) {
                     const auto &a = df.atoms[i];
@@ -220,6 +226,9 @@ PYBIND11_MODULE(lammpsParser, m) {
                     xv(idx) = a.x;
                     yv(idx) = a.y;
                     zv(idx) = a.z;
+                    ixv(idx) = a.ix;
+                    iyv(idx) = a.iy;
+                    izv(idx) = a.iz;
                 }
 
                 py::dict header;
@@ -244,6 +253,9 @@ PYBIND11_MODULE(lammpsParser, m) {
                 columns["x"] = arr_x;
                 columns["y"] = arr_y;
                 columns["z"] = arr_z;
+                columns["ix"] = arr_ix;
+                columns["iy"] = arr_iy;
+                columns["iz"] = arr_iz;
 
                 py::dict result;
                 result["header"] = header;

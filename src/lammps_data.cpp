@@ -154,6 +154,9 @@ DataFile parse_data_from_file(const std::string& filepath, const std::string& at
             a.x = std::stod(tok[3]);
             a.y = std::stod(tok[4]);
             a.z = std::stod(tok[5]);
+            a.ix = std::stoll(tok[6]);
+            a.iy = std::stoll(tok[7]);
+            a.iz = std::stoll(tok[8]);
         } else if (style == "atomic") {
             if (tok.size() < 5) continue;
             a.id = std::stoll(tok[0]);

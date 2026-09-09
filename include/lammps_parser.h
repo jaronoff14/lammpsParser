@@ -66,6 +66,7 @@ struct DataAtom {
     long long mol = 0;
     long long type = 0;
     double x = 0.0, y = 0.0, z = 0.0;
+    long long ix = 0, iy= 0 , iz = 0;
 
     std::vector<std::string> raw_tokens;
 };
