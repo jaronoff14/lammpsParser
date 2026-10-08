@@ -209,7 +209,7 @@ ParsedFrame parse_frame_from_file(const string &filepath, const int frame_num, c
     if (frame_num != 0) {
         string testLine;
         Header initial_header = parseHeaderFromStream(ifs,item_atoms_line);
-        int start_line = (initial_header.n_atoms) * frame_num;
+        int start_line = (initial_header.n_atoms + 8) * frame_num;
 
         string line;
         int count = 0;
