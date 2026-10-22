@@ -11,6 +11,7 @@ namespace lammps_parser {
 const char* DEFAULT_ATOMSTYLE = "molecular";
 
 static std::string trim_copy(const std::string& s) {
+    //Takes a string and removes the white space from the begining and end
     const auto b = s.find_first_not_of(" \t\r\n");
     if (b == std::string::npos) return "";
     const auto e = s.find_last_not_of(" \t\r\n");
@@ -18,12 +19,14 @@ static std::string trim_copy(const std::string& s) {
 }
 
 static std::string lower_copy(const std::string& s) {
+    // Takes in a string and returns it with all lowercase characters
     std::string r = s;
     for (char& c : r) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     return r;
 }
 
 static std::vector<std::string> split_ws(const std::string& s) {
+
     std::vector<std::string> out;
     std::istringstream iss(s);
     std::string tok;
@@ -32,6 +35,7 @@ static std::vector<std::string> split_ws(const std::string& s) {
 }
 
 static bool is_int_token(const std::string& s) {
+
     try {
         size_t pos = 0;
         std::stoll(s, &pos);
@@ -42,6 +46,7 @@ static bool is_int_token(const std::string& s) {
 }
 
 static bool is_known_next_section(const std::string& t) {
+    //
     std::string low = lower_copy(trim_copy(t));
     if (low.empty()) return false;
 
@@ -58,10 +63,12 @@ static bool is_known_next_section(const std::string& t) {
 }
 
 static std::string parse_style_from_atoms_header(const std::string& line) {
+    //Finds the first # in a line and returns everything after it
     const auto hash = line.find('#');
-    if (hash == std::string::npos) return "";
+    if (hash == std::string::npos) return "";   // If not found return empty string
     return lower_copy(trim_copy(line.substr(hash + 1)));
 }
+
 
 DataFile parse_data_from_file(const std::string& filepath, const std::string& atom_style) {
     std::ifstream ifs(filepath);
@@ -78,7 +85,7 @@ DataFile parse_data_from_file(const std::string& filepath, const std::string& at
 
     while (std::getline(ifs, line)) {
         std::string t = trim_copy(line);
-        if (t.empty() || t[0] == '#') continue;
+        if (t.empty() || t[0] == '#') continue; // skip empty/header lines
 
         std::vector<std::string> tok = split_ws(t);
         if (tok.empty()) continue;
